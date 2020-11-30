@@ -9,7 +9,6 @@ import 'package:photofilters/filters/filters.dart';
 
 class PhotoFilter extends StatelessWidget {
   final imageLib.Image image;
-  final Widget title;
   final String filename;
   final Filter filter;
   final BoxFit fit;
@@ -17,7 +16,7 @@ class PhotoFilter extends StatelessWidget {
 
   PhotoFilter({
     @required this.image,
-    @required this.title,
+
     @required this.filename,
     @required this.filter,
     this.fit = BoxFit.fill,
@@ -59,6 +58,7 @@ class PhotoFilterSelector extends StatefulWidget {
   final List<Filter> filters;
   final imageLib.Image image;
   final Widget loader;
+  final Widget title;
   final BoxFit fit;
   final String filename;
   final bool circleShape;
@@ -66,6 +66,7 @@ class PhotoFilterSelector extends StatefulWidget {
   const PhotoFilterSelector({
     Key key,
     @required this.filters,
+    @required this.title,
     @required this.image,
     this.appBarColor = Colors.blue,
     this.loader = const Center(child: CircularProgressIndicator()),
