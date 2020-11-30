@@ -53,7 +53,6 @@ class PhotoFilter extends StatelessWidget {
 
 ///The PhotoFilterSelector Widget for apply filter from a selected set of filters
 class PhotoFilterSelector extends StatefulWidget {
-  final Widget title;
   final Color appBarColor;
   final List<Filter> filters;
   final imageLib.Image image;
@@ -64,7 +63,6 @@ class PhotoFilterSelector extends StatefulWidget {
 
   const PhotoFilterSelector({
     Key key,
-    @required this.title,
     @required this.filters,
     @required this.image,
     this.appBarColor = Colors.blue,
@@ -95,31 +93,26 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: widget.title,
+          title: Text('Title'),
           backgroundColor: widget.appBarColor,
           actions: <Widget>[
             loading
                 ? Container()
                 : IconButton(
-                    icon: Icon(Icons.check),
-                    onPressed: () async {
-                      setState(() {
-                        loading = true;
-                      });
-                      var imageFile = await saveFilteredImage();
+              icon: Icon(Icons.check),
+              onPressed: () async {
+                setState(() {
+                  loading = true;
+                });
+                var imageFile = await saveFilteredImage();
 
-                      Navigator.pop(context, {'image_filtered': imageFile});
-                    },
-                  )
+                Navigator.pop(context, {'image_filtered': imageFile});
+              },
+            )
           ],
         ),
         body: Container(
@@ -128,55 +121,60 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
           child: loading
               ? widget.loader
               : Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        padding: EdgeInsets.all(12.0),
-                        child: _buildFilteredImage(
-                          _filter,
-                          image,
-                          filename,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: widget.filters.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return InkWell(
-                              child: Container(
-                                padding: EdgeInsets.all(5.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    _buildFilterThumbnail(
-                                        widget.filters[index], image, filename),
-                                    SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    Text(
-                                      widget.filters[index].name,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              onTap: () => setState(() {
-                                _filter = widget.filters[index];
-                              }),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                flex: 8,
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  padding: EdgeInsets.all(12.0),
+                  child: _buildFilteredImage(
+                    _filter,
+                    image,
+                    filename,
+                  ),
                 ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.filters.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell(
+                        child: Container(
+                          padding: EdgeInsets.all(5.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              _buildFilterThumbnail(
+                                  widget.filters[index], image, filename),
+                              SizedBox(
+                                height: 5.0,
+                              ),
+                              Text(
+                                widget.filters[index].name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        onTap: () =>
+                            setState(() {
+                              _filter = widget.filters[index];
+                            }),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -245,8 +243,8 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
     return imageFile;
   }
 
-  Widget _buildFilteredImage(
-      Filter filter, imageLib.Image image, String filename) {
+  Widget _buildFilteredImage(Filter filter, imageLib.Image image,
+      String filename) {
     if (cachedFilters[filter?.name ?? "_"] == null) {
       return FutureBuilder<List<int>>(
         future: compute(applyFilter, <String, dynamic>{
@@ -267,21 +265,30 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
               cachedFilters[filter?.name ?? "_"] = snapshot.data;
               return widget.circleShape
                   ? SizedBox(
-                      height: MediaQuery.of(context).size.width / 3,
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: Center(
-                        child: CircleAvatar(
-                          radius: MediaQuery.of(context).size.width / 3,
-                          backgroundImage: MemoryImage(
-                            snapshot.data,
-                          ),
-                        ),
-                      ),
-                    )
-                  : Image.memory(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 4,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 4,
+                child: Center(
+                  child: CircleAvatar(
+                    radius: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 3,
+                    backgroundImage: MemoryImage(
                       snapshot.data,
-                      fit: BoxFit.contain,
-                    );
+                    ),
+                  ),
+                ),
+              )
+                  : Image.memory(
+                snapshot.data,
+                fit: BoxFit.contain,
+              );
           }
           return null; // unreachable
         },
@@ -289,21 +296,30 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
     } else {
       return widget.circleShape
           ? SizedBox(
-              height: MediaQuery.of(context).size.width / 3,
-              width: MediaQuery.of(context).size.width / 3,
-              child: Center(
-                child: CircleAvatar(
-                  radius: MediaQuery.of(context).size.width / 3,
-                  backgroundImage: MemoryImage(
-                    cachedFilters[filter?.name ?? "_"],
-                  ),
-                ),
-              ),
-            )
-          : Image.memory(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 4,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 4,
+        child: Center(
+          child: CircleAvatar(
+            radius: MediaQuery
+                .of(context)
+                .size
+                .width / 4,
+            backgroundImage: MemoryImage(
               cachedFilters[filter?.name ?? "_"],
-              fit: widget.fit,
-            );
+            ),
+          ),
+        ),
+      )
+          : Image.memory(
+        cachedFilters[filter?.name ?? "_"],
+        fit: widget.fit,
+      );
     }
   }
 }
@@ -318,7 +334,7 @@ List<int> applyFilter(Map<String, dynamic> params) {
     filter.apply(_bytes, image.width, image.height);
   }
   imageLib.Image _image =
-      imageLib.Image.fromBytes(image.width, image.height, _bytes);
+  imageLib.Image.fromBytes(image.width, image.height, _bytes);
   _bytes = imageLib.encodeNamedImage(_image, filename);
 
   return _bytes;
